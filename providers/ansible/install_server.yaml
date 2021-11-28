@@ -1,0 +1,39 @@
+---
+- name: Install Python
+  hosts: 'all'
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: Install python
+      yum:
+        name: python3
+        state: present
+    
+    - name: install pip
+      yum:
+        name: pip
+        state: present
+    
+    - name: install git
+      yum:
+        name: git
+        state: present
+    
+    - name: install libraries
+      pip:
+        executable: pip3
+        name:
+          - cherrypy
+          - boto3
+     
+    - name: Copy python cherrypy service file
+      template:
+        src: templates/cherrypy.service.j2
+        dest: /etc/systemd/system/cherrypy.service
+    
+    - name: Start and enable service
+      service:
+        daemon_reload: yes
+        name: cherrypy
+        state: started
+        enabled: yes
